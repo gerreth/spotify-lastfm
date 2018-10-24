@@ -3,20 +3,16 @@
  */
 import React from 'react';
 
-import { BandWrapper, BandInnerWrapper, BandName } from './styled';
+import Band from '../Band';
+import { BandWrapper } from './styled';
 
 class SimilarBand extends React.PureComponent {
   render() {
-    const { image, name } = this.props;
-    const background = {
-      // background: `url(${image.url})`,
-      backgroundSize: 'cover',
-    };
+    const { image, name, token, uri } = this.props;
+
     return (
       <BandWrapper>
-        <BandInnerWrapper style={background}>
-          <BandName>{name}</BandName>
-        </BandInnerWrapper>
+        <Band image={image} name={name} token={token} uri={uri} />
       </BandWrapper>
     );
   }

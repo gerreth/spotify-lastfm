@@ -53,10 +53,11 @@ class BandsTransformer {
 
     return bands.map(band => {
       return {
-        name: band.name,
-        image: getImage(band),
         id: band.id,
+        image: getImage(band),
         mbid: null,
+        name: band.name,
+        uri: band.uri,
       };
     });
   }
@@ -146,6 +147,7 @@ class BandsTransformer {
         image: getImage(band),
         id: null,
         mbid: band.mbid,
+        uri: null,
       };
     });
   }

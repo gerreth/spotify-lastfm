@@ -25,7 +25,9 @@ export default class Login extends React.Component {
       client_id: process.env.SPOTIFY_CLIENT_ID,
       redirect_uri: 'http://localhost:1000/spotify/callback',
       response_type: 'token',
-      scope: 'user-read-private user-read-email user-top-read',
+      scope:
+        'user-read-private user-read-email user-top-read' +
+        ' user-modify-playback-state',
       show_dialog: true,
     };
 
