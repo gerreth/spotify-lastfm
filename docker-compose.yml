@@ -1,0 +1,39 @@
+version: "3"
+services:
+  frontend:
+    build: ./frontend
+    environment:
+      - LASTFM_API_KEY=${LASTFM_API_KEY}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+    ports:
+      - 1000:3000
+    restart: always
+    volumes:
+      - ./frontend:/usr/src/frontend/
+
+  backend:
+    build: ./backend
+    environment:
+      - LASTFM_API_KEY=${LASTFM_API_KEY}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_AUTH=${REDIS_AUTH}
+      - REDIS_PORT=${REDIS_PORT}
+    ports:
+      - 1001:3000
+    restart: always
+    volumes:
+      - ./backend:/usr/src/backend/
+
+  mongodb:
+    image: mongo:latest # 4.0
+    environment:
+      - MONGO_DATA_DIR=/mongo/db
+      - MONGO_LOG_DIR=/dev/null
+      - MONGO_USER="root"
+      - MONGO_PASS="root"
+    volumes:
+      - ./mongo/db:/mongo/db
+    ports:
+      - 27017:27017
+    command: mongod --smallfiles --logpath=/dev/null
