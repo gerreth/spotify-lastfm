@@ -12,7 +12,7 @@ export const HeaderWrapper = styled.div`
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 1;
+  z-index: 3;
 `;
 
 export const MainNav = styled.div``;
