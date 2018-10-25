@@ -2,7 +2,8 @@
  * Band
  */
 import React from 'react';
-import Image from '../Image';
+import ProgressiveImage from 'react-progressive-image';
+import { get } from 'lodash';
 import { BandInnerWrapper, BandName } from './styled';
 
 class Band extends React.PureComponent {
@@ -28,18 +29,16 @@ class Band extends React.PureComponent {
 
   render() {
     const { image, name, uri } = this.props;
-    const background = {
-      background: `url(${image && image.large && image.large.url})`,
-      backgroundSize: 'cover',
-    };
 
     return (
-      <BandInnerWrapper
-        onClick={uri && this.play.bind(this)}
-        style={background}
-      >
+      <BandInnerWrapper onClick={uri && this.play.bind(this)}>
         <BandName>{name}</BandName>
-        {/* <Image image={image} /> */}
+        <ProgressiveImage
+          src={get(image, 'large.url')}
+          placeholder={get(image, 'small.url')}
+        >
+          {src => <img src={src} alt="an image" />}
+        </ProgressiveImage>
       </BandInnerWrapper>
     );
   }
