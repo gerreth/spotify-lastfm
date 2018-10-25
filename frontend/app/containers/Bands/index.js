@@ -42,7 +42,7 @@ class Bands extends React.Component {
     return (
       <div>
         <BandsWrapper>{top}</BandsWrapper>
-        {/* <BandsWrapper>{similar}</BandsWrapper> */}
+        <BandsWrapper>{similar}</BandsWrapper>
       </div>
     );
   }

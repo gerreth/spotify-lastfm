@@ -165,6 +165,7 @@
     "react-intl": "2.4.0",
     "react-loadable": "5.4.0",
     "react-loader-spinner": "^2.0.6",
+    "react-progressive-image": "^0.6.0",
     "react-redux": "5.0.7",
     "react-router-dom": "4.3.1",
     "react-router-redux": "5.0.0-alpha.9",
