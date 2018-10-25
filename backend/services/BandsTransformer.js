@@ -3,16 +3,34 @@ class BandsTransformer {
     const getImage = band => {
       try {
         return band.images.reduce(
-          (carry, item) => (item.width > carry.width ? item : carry),
-          band.images[0],
+          (carry, item) => {
+            const newLargeImage =
+              item.width > carry.large.width ? item : carry.large;
+            const newSmallImage =
+              item.width < carry.small.width ? item : carry.small;
+
+            return {
+              large: newLargeImage,
+              small: newSmallImage,
+            };
+          },
+          { large: band.images[0], small: band.images[0] },
         );
       } catch (e) {
         console.debug('Error: BandsTransformer -> fromSpotify() -> getImage()');
         return {
-          height: 0,
-          url: null,
-          size: null,
-          width: 0,
+          large: {
+            height: 0,
+            url: null,
+            size: null,
+            width: 0,
+          },
+          small: {
+            height: 0,
+            url: null,
+            size: null,
+            width: 0,
+          },
         };
       }
     };
@@ -76,31 +94,60 @@ class BandsTransformer {
               'mega',
             ];
             const newItem =
-              sizes.indexOf(item.size) > sizes.indexOf(carry.size)
+              sizes.indexOf(item.size) > sizes.indexOf(carry.large.size)
                 ? item
-                : carry;
+                : carry.large;
+
+            const newSmallImage =
+              sizes.indexOf(item.size) < sizes.indexOf(carry.small.size)
+                ? item
+                : carry.small;
 
             return {
-              height: 0,
-              url: newItem['#text'] || newItem.url,
-              size: newItem['size'] || null,
-              width: 0,
+              large: {
+                height: 0,
+                url: newItem['#text'] || newItem.url,
+                size: newItem['size'] || null,
+                width: 0,
+              },
+              small: {
+                height: 0,
+                url: newSmallImage['#text'] || newSmallImage.url,
+                size: newSmallImage['size'] || null,
+                width: 0,
+              },
             };
           },
           {
-            height: 0,
-            url: band.image[0]['#text'] || null,
-            size: band.image[0]['size'] || null,
-            width: 0,
+            large: {
+              height: 0,
+              url: band.image[0]['#text'] || null,
+              size: band.image[0]['size'] || null,
+              width: 0,
+            },
+            small: {
+              height: 0,
+              url: band.image[0]['#text'] || null,
+              size: band.image[0]['size'] || null,
+              width: 0,
+            },
           },
         );
       } catch (e) {
         console.debug('Error: BandsTransformer -> fromLastfm() -> getImage()');
         return {
-          height: 0,
-          url: null,
-          size: null,
-          width: 0,
+          large: {
+            height: 0,
+            url: null,
+            size: null,
+            width: 0,
+          },
+          small: {
+            height: 0,
+            url: null,
+            size: null,
+            width: 0,
+          },
         };
       }
     };

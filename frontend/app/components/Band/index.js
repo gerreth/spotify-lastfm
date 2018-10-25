@@ -2,8 +2,8 @@
  * Band
  */
 import React from 'react';
-
-import { BandWrapper, BandInnerWrapper, BandName } from './styled';
+import Image from '../Image';
+import { BandInnerWrapper, BandName } from './styled';
 
 class Band extends React.PureComponent {
   constructor(props) {
@@ -11,7 +11,8 @@ class Band extends React.PureComponent {
     this.state = { imageStatus: 'loading' };
   }
 
-  play() {
+  async play() {
+    console.log('TEST');
     const options = {
       headers: {
         Authorization: 'Bearer ' + this.props.token,
@@ -24,7 +25,8 @@ class Band extends React.PureComponent {
 
     const url = 'https://api.spotify.com/v1/me/player/play';
 
-    fetch(url, options);
+    const result = fetch(url, options);
+    console.log({ result: result });
   }
 
   handleImageLoaded() {
@@ -37,11 +39,7 @@ class Band extends React.PureComponent {
     return (
       <BandInnerWrapper onClick={uri && this.play.bind(this)}>
         <BandName>{name}</BandName>
-        <img
-          src={image && image.url}
-          style={{ opacity: this.state.imageStatus === 'loading' ? 0 : 1 }}
-          onLoad={this.handleImageLoaded.bind(this)}
-        />
+        <Image image={image} />
       </BandInnerWrapper>
     );
   }

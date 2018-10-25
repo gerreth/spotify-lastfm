@@ -34,7 +34,6 @@ class Bands extends React.Component {
         return a.name.localeCompare(b.name);
       })
       .map((band, index) => {
-        console.log(band.image);
         return (
           <SimilarBand
             key={`${band.name}-${band.id || band.mbid}-${index}`}
