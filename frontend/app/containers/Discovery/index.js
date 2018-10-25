@@ -18,7 +18,8 @@ import { BandWrapper } from './styled';
 class Discovery extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { index: 0 };
+    const bands = _.shuffle(props.similar);
+    this.state = { index: 0, bands };
   }
 
   increment() {
@@ -47,9 +48,23 @@ class Discovery extends React.Component {
     fetch(url, options);
   }
 
+  next(token) {
+    const options = {
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'content-type': 'application/json',
+      },
+      json: true,
+      method: 'POST',
+    };
+
+    const url = 'https://api.spotify.com/v1/me/player/next';
+
+    fetch(url, options);
+  }
+
   getBand() {
-    const bands = _.shuffle(this.props.similar);
-    const band = bands[this.state.index];
+    const band = this.state.bands[this.state.index];
 
     this.play(this.props.token, band.uri);
 
@@ -57,7 +72,7 @@ class Discovery extends React.Component {
       <div
         style={{
           // boxShadow: '1px 1px 3px 0px rgba(0,0,0,.2)',
-          position: 'relative',
+          border: 'solid rgba(0, 0, 0, 0.1) 1px',
           width: '600px',
         }}
       >
@@ -67,27 +82,46 @@ class Discovery extends React.Component {
           </p>
           <p style={{ fontWeight: 'bold' }}>{band.name}</p>
         </div>
-        <BandWrapper>
-          <img src={band.image.large.url} />
-        </BandWrapper>
-        <div
-          style={{
-            display: 'flex',
-            fontWeight: 'bold',
-            justifyContent: 'space-between',
-            padding: '16px',
+        <BandWrapper
+          onClick={() => {
+            this.next(this.props.token);
           }}
         >
-          <span onClick={this.decrement.bind(this)}>{'<'}</span>
-          <span onClick={this.increment.bind(this)}>{'>'}</span>
-        </div>
+          <img src={band.image.large.url} />
+          <div
+            style={{
+              bottom: '0px',
+              display: 'flex',
+              fontWeight: 'bold',
+              justifyContent: 'space-between',
+              left: '0px',
+              padding: '16px',
+              position: 'absolute',
+              right: '0px',
+              zIndex: 3,
+            }}
+          >
+            <span
+              style={{ background: '#fff', padding: '8px 16px' }}
+              onClick={this.decrement.bind(this)}
+            >
+              {'<'}
+            </span>
+            <span
+              style={{ background: '#fff', padding: '8px 16px' }}
+              onClick={this.increment.bind(this)}
+            >
+              {'>'}
+            </span>
+          </div>
+        </BandWrapper>
       </div>
     );
   }
 
   render() {
     return (
-      <div>
+      <div style={{ padding: '8px' }}>
         <div style={{ textAlign: 'center' }}>{this.getBand()}</div>
       </div>
     );
