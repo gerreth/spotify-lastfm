@@ -8,11 +8,9 @@ import { BandWrapper } from './styled';
 
 class TopBand extends React.PureComponent {
   render() {
-    const { image, name, token, uri } = this.props;
-
     return (
       <BandWrapper>
-        <Band image={image} name={name} token={token} uri={uri} />
+        <Band {...this.props} />
       </BandWrapper>
     );
   }

@@ -7,29 +7,16 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
 
-import TopBand from 'components/TopBand';
 import SimilarBand from 'components/SimilarBand';
 
 import { spotifyTokenSelector } from '../SpotifyCallback/selectors';
+import { similarBandsSelector } from '../Bands/selectors';
 
-import { allBandsSelector } from './selectors';
 import { BandsWrapper } from './styled';
 
-class Bands extends React.Component {
+class SimilarBands extends React.Component {
   render() {
-    const top = this.props.bands.top.map((band, index) => {
-      return (
-        <TopBand
-          key={`${band.name}-${band.id || band.mbid}-${index}`}
-          name={band.name}
-          image={band.image}
-          token={this.props.token}
-          uri={band.uri}
-        />
-      );
-    });
-
-    const similar = this.props.bands.similar
+    const similar = this.props.similar
       .sort((a, b) => {
         return a.name.localeCompare(b.name);
       })
@@ -47,26 +34,22 @@ class Bands extends React.Component {
 
     return (
       <div>
-        <BandsWrapper>{top}</BandsWrapper>
-        {/* <BandsWrapper>{similar}</BandsWrapper> */}
+        <BandsWrapper>{similar}</BandsWrapper>
       </div>
     );
   }
 }
 
-Bands.propTypes = {
-  bands: PropTypes.shape({
-    similar: PropTypes.array,
-    top: PropTypes.array,
-  }),
+SimilarBands.propTypes = {
+  similar: PropTypes.array,
   token: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
-  bands: allBandsSelector(),
+  similar: similarBandsSelector(),
   token: spotifyTokenSelector(),
 });
 
 const withConnect = connect(mapStateToProps);
 
-export default compose(withConnect)(Bands);
+export default compose(withConnect)(SimilarBands);
