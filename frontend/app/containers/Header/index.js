@@ -26,7 +26,11 @@ class Header extends React.PureComponent {
     );
 
     const privateLinks = loggedIn ? (
-      <StyledLink to="/bands">Bands</StyledLink>
+      <React.Fragment>
+        <StyledLink to="/bands">Bands</StyledLink>
+        <StyledLink to="/similar-bands">Similar Bands</StyledLink>
+        <StyledLink to="/discovery">Discovery</StyledLink>
+      </React.Fragment>
     ) : null;
 
     return (

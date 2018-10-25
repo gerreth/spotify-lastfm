@@ -7,12 +7,14 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import Bands from 'containers/Bands/Loadable';
+import Discovery from 'containers/Discovery/Loadable';
 import Header from 'containers/Header/Loadable';
 import HomePage from 'containers/HomePage/Loadable';
 import LastfmCallback from 'containers/LastfmCallback';
 import Login from 'containers/Login/Loadable';
 import Logout from 'containers/Logout/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
+import SimilarBands from 'containers/SimilarBands/Loadable';
 import SpotifyCallback from 'containers/SpotifyCallback';
 
 import { ContentWrapper } from './styled';
@@ -29,6 +31,8 @@ export default function App() {
           <Route exact path="/login" component={Login} />
           <Route exact path="/logout" component={Logout} />
           <Route exact path="/bands" component={Bands} />
+          <Route exact path="/discovery" component={Discovery} />
+          <Route exact path="/similar-bands" component={SimilarBands} />
 
           <Route exact path="/lastfm/callback" component={LastfmCallback} />
           <Route exact path="/spotify/callback" component={SpotifyCallback} />

@@ -20,16 +20,20 @@ class Img extends React.PureComponent {
 
     return (
       <div>
-        <img
-          style={{ display: status === 'loading' ? 'block' : 'none' }}
-          src={image && image.small && image.small.url}
-          onLoad={this.handleImageLoaded.bind(this, 'small')}
-        />
-        <img
-          style={{ display: status === 'large' ? 'block' : 'none' }}
-          src={image && image.large && image.large.url}
-          onLoad={this.handleImageLoaded.bind(this, 'large')}
-        />
+        {status !== 'large' && (
+          <div>
+            <img
+              src={image && image.small && image.small.url}
+              onLoad={this.handleImageLoaded.bind(this, 'small')}
+            />
+          </div>
+        )}
+        {(status === 'large' || status === 'small') && (
+          <img
+            src={image && image.large && image.large.url}
+            onLoad={this.handleImageLoaded.bind(this, 'large')}
+          />
+        )}
       </div>
     );
   }
