@@ -7,17 +7,6 @@ import PropTypes from 'prop-types';
 import Band from '../Band';
 import { BandWrapper } from './styled';
 
-<<<<<<< Updated upstream
-class SimilarBand extends React.PureComponent {
-  render() {
-    return (
-      <BandWrapper>
-        <Band {...this.props} />
-      </BandWrapper>
-    );
-  }
-}
-=======
 const SimilarBand = props => (
   <BandWrapper>
     <Band {...props} />
@@ -30,6 +19,5 @@ Band.propTypes = {
   token: PropTypes.string,
   uri: PropTypes.string,
 };
->>>>>>> Stashed changes
 
 export default SimilarBand;
