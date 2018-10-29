@@ -41,6 +41,44 @@ class UserController {
       }
     });
   }
+
+  like(band) {
+    User.findOne({ name: 'gereeet' }, (err, user) => {
+      if (user === null) {
+        if (err) return console.error(err);
+      } else {
+        const likes = user.likes.find(like => like.id === band.id);
+
+        if (likes == undefined) {
+          user.likes.push(band);
+        } else {
+        }
+
+        user.save();
+        console.log(user.likes);
+        console.log(user.dislikes);
+      }
+    });
+  }
+
+  dislike(band) {
+    User.findOne({ name: 'gereeet' }, (err, user) => {
+      if (user === null) {
+        if (err) return console.error(err);
+      } else {
+        const dislikes = user.dislikes.find(dislike => dislike.id === band.id);
+
+        if (dislikes == undefined) {
+          user.dislikes.push(band);
+        } else {
+        }
+
+        user.save();
+        console.log(user.likes);
+        console.log(user.dislikes);
+      }
+    });
+  }
 }
 
 module.exports = new UserController();

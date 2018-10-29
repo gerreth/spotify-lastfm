@@ -8,11 +8,10 @@ import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
-import Image from 'components/Image';
+import Band from './Band';
 
 import { spotifyTokenSelector } from '../SpotifyCallback/selectors';
 import { similarBandsSelector } from '../Bands/selectors';
-
 import { BandWrapper } from './styled';
 
 class Discovery extends React.Component {
@@ -35,7 +34,7 @@ class Discovery extends React.Component {
   play(token, uri) {
     const options = {
       headers: {
-        Authorization: 'Bearer ' + token,
+        Authorization: `Bearer ${token}`,
         'content-type': 'application/json',
       },
       json: true,
@@ -51,7 +50,7 @@ class Discovery extends React.Component {
   next(token) {
     const options = {
       headers: {
-        Authorization: 'Bearer ' + token,
+        Authorization: `Bearer ${token}`,
         'content-type': 'application/json',
       },
       json: true,
@@ -64,66 +63,41 @@ class Discovery extends React.Component {
   }
 
   getBand() {
-    const band = this.state.bands[this.state.index];
+    const { id, image, name, uri } = this.state.bands[this.state.index];
 
-    this.play(this.props.token, band.uri);
+    const options = {
+      headers: {
+        Authorization: `Bearer ${this.props.token}`,
+        'content-type': 'application/json',
+      },
+      json: true,
+      method: 'PUT',
+      body: JSON.stringify({ context_uri: uri }),
+    };
+
+    const url = 'https://api.spotify.com/v1/me/player/play';
+
+    fetch(url, options);
 
     return (
-      <div
-        style={{
-          // boxShadow: '1px 1px 3px 0px rgba(0,0,0,.2)',
-          border: 'solid rgba(0, 0, 0, 0.1) 1px',
-          margin: '0 auto',
-          width: '500px',
-        }}
-      >
-        <div style={{ padding: '16px 0' }}>
-          <p style={{ fontSize: '0.7em', textTransform: 'uppercase' }}>
-            This is
-          </p>
-          <p style={{ fontWeight: 'bold' }}>{band.name}</p>
-        </div>
-        <BandWrapper
-          onClick={() => {
-            this.next(this.props.token);
-          }}
-        >
-          <img src={band.image.large.url} />
-          <div
-            style={{
-              bottom: '0px',
-              display: 'flex',
-              fontWeight: 'bold',
-              justifyContent: 'space-between',
-              left: '0px',
-              padding: '16px',
-              position: 'absolute',
-              right: '0px',
-              zIndex: 3,
-            }}
-          >
-            <span
-              style={{ background: '#fff', padding: '8px 16px' }}
-              onClick={this.decrement.bind(this)}
-            >
-              {'<'}
-            </span>
-            <span
-              style={{ background: '#fff', padding: '8px 16px' }}
-              onClick={this.increment.bind(this)}
-            >
-              {'>'}
-            </span>
-          </div>
-        </BandWrapper>
-      </div>
+      <Band
+        id={id}
+        image={image}
+        name={name}
+        uri={uri}
+        token={this.props.token}
+        next={this.increment.bind(this)}
+        previous={this.decrement.bind(this)}
+      />
     );
   }
 
   render() {
+    const DiscoveryWrapper = { padding: '8px' };
+
     return (
-      <div style={{ padding: '8px' }}>
-        <div style={{ textAlign: 'center' }}>{this.getBand()}</div>
+      <div style={DiscoveryWrapper}>
+        <BandWrapper>{this.getBand()}</BandWrapper>
       </div>
     );
   }

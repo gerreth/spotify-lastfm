@@ -12,6 +12,8 @@ const userSchema = new mongoose.Schema({
       spotify: [],
     },
   },
+  likes: [],
+  dislikes: [],
 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -10,7 +10,7 @@ import mongoose from './clients/mongoose';
 import indexRouter from './routes/index';
 import lastfmRouter from './routes/lastfm';
 import spotifyRouter from './routes/spotify';
-import usersRouter from './routes/users';
+import usersRouter from './routes/user';
 
 const app = express();
 
@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/lastfm', lastfmRouter);
 app.use('/spotify', spotifyRouter);
-app.use('/users', usersRouter);
+app.use('/user', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
