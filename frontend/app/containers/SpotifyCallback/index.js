@@ -8,6 +8,7 @@ import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
+import Loader from 'react-loader-spinner';
 // project imports
 import bandsReducer from '../Bands/reducer';
 // local import
@@ -30,6 +31,7 @@ class SpotifyCallback extends React.Component {
 
     return (
       <div>
+        <Loader type="Triangle" color="#333" height="30" width="30" />
         <p className="loading">Loading {status(this.props.bands)}...</p>
       </div>
     );
