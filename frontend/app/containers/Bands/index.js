@@ -17,33 +17,27 @@ import { BandsWrapper } from './styled';
 
 class Bands extends React.Component {
   render() {
-    const top = this.props.bands.top.map((band, index) => {
-      return (
-        <TopBand
-          key={`${band.name}-${band.id || band.mbid}-${index}`}
+    const top = this.props.bands.top.map(band => (
+      <TopBand
+        key={`${band.name}-${band.id || band.mbid}`}
+        name={band.name}
+        image={band.image}
+        token={this.props.token}
+        uri={band.uri}
+      />
+    ));
+
+    const similar = this.props.bands.similar
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(band => (
+        <SimilarBand
+          key={`${band.name}-${band.id || band.mbid}`}
           name={band.name}
           image={band.image}
           token={this.props.token}
           uri={band.uri}
         />
-      );
-    });
-
-    const similar = this.props.bands.similar
-      .sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      })
-      .map((band, index) => {
-        return (
-          <SimilarBand
-            key={`${band.name}-${band.id || band.mbid}-${index}`}
-            name={band.name}
-            image={band.image}
-            token={this.props.token}
-            uri={band.uri}
-          />
-        );
-      });
+      ));
 
     return (
       <div>
