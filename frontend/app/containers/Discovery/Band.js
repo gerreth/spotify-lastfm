@@ -57,9 +57,9 @@ class Band extends React.Component {
     const BandImageWrapper = {
       background: `url(${get(image, 'large.url')})`,
       backgroundSize: 'cover',
-      height: '600px',
+      height: '400px',
       position: 'relative',
-      width: '600px',
+      width: '400px',
     };
 
     const LikeWrapper = {
