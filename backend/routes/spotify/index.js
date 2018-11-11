@@ -6,43 +6,41 @@ import BandsTransformer from '../../services/BandsTransformer';
 
 const router = express.Router();
 
+const wrapAsync = fn => {
+  return (req, res, next) => {
+    fn(req, res, next).catch(next);
+  };
+};
+
 /* GET home page. */
 router.get('/', (req, res) => {
   res.send('response');
 });
 
-router.post('/top-bands', async (req, res) => {
-  let topBands;
+router.post(
+  '/top-bands',
+  wrapAsync(async (req, res) => {
+    let topBands = await client.topBands(req.body.token);
 
-  try {
-    topBands = await client.topBands(req.body.token);
-  } catch (e) {
-    res.status(400);
-    return res.send(e);
-  }
+    topBands = BandsTransformer.fromSpotify(topBands);
 
-  topBands = BandsTransformer.fromSpotify(topBands);
+    UserController.top('spotify', topBands);
 
-  UserController.top('spotify', topBands);
+    return res.send(topBands);
+  }),
+);
 
-  return res.send(topBands);
-});
+router.post(
+  '/similar-bands',
+  wrapAsync(async (req, res) => {
+    let similarBands = await client.similarBands(req.body.ids, req.body.token);
 
-router.post('/similar-bands', async (req, res) => {
-  let similarBands;
+    similarBands = BandsTransformer.fromSpotify(similarBands);
 
-  try {
-    similarBands = await client.similarBands(req.body.ids, req.body.token);
-  } catch (e) {
-    res.status(400);
-    return res.send(e);
-  }
+    UserController.similar('spotify', similarBands);
 
-  similarBands = BandsTransformer.fromSpotify(similarBands);
-
-  UserController.similar('spotify', similarBands);
-
-  return res.send(similarBands);
-});
+    return res.send(similarBands);
+  }),
+);
 
 module.exports = router;

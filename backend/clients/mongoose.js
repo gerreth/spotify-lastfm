@@ -7,7 +7,10 @@ const mongodb = `mongodb://${host}:${port}/${database}`;
 
 class MongoDB {
   constructor() {
-    mongoose.connect(mongodb);
+    mongoose.connect(
+      mongodb,
+      { useNewUrlParser: true },
+    );
     mongoose.Promise = global.Promise; // look this up
 
     const client = mongoose.connection;
