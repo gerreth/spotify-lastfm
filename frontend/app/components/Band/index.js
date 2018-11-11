@@ -2,10 +2,9 @@
  * Band
  */
 import React from 'react';
-import ProgressiveImage from 'react-progressive-image';
 import PropTypes from 'prop-types';
-import { get } from 'lodash';
 import { BandInnerWrapper, BandName } from './styled';
+import Image from '../Image';
 
 const Band = props => {
   const play = () => {
@@ -29,12 +28,7 @@ const Band = props => {
   return (
     <BandInnerWrapper onClick={uri && play.bind(this)}>
       <BandName>{name}</BandName>
-      <ProgressiveImage
-        src={get(image, 'large.url')}
-        placeholder={get(image, 'small.url')}
-      >
-        {src => <img src={src} alt="Band" />}
-      </ProgressiveImage>
+      <Image image={image} />
     </BandInnerWrapper>
   );
 };
