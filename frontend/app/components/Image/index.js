@@ -1,18 +1,16 @@
 /*
  * Image
  */
-import React from 'react';
+import React, { Component } from 'react';
 import { get } from 'lodash';
 import VisibilitySensor from 'react-visibility-sensor';
 
-class Img extends React.PureComponent {
+class Img extends Component {
   constructor(props) {
     super(props);
 
     this.state = { status: 'constructed', src: get(props, 'image.small.url') };
   }
-
-  componentDidUpdate() {}
 
   onChange = isVisible => {
     const status = this.state.status;
@@ -40,15 +38,27 @@ class Img extends React.PureComponent {
   };
 
   onError = () => {
-    // console.log('error');
+    console.log('error loading larger version');
   };
 
   render() {
-    const { src } = this.state;
+    const style = {
+      background: 'red',
+      backgroundImage: `url(${this.state.src})`,
+      backgroundPosition: '50% 50%',
+      backgroundSize: 'cover',
+      bottom: 0,
+      left: 0,
+      height: '100%',
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      width: '100%',
+    };
 
     return (
       <VisibilitySensor partialVisibility delayedCall onChange={this.onChange}>
-        <img src={src} />
+        <div style={style} />
       </VisibilitySensor>
     );
   }
