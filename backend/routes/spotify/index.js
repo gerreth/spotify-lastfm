@@ -15,7 +15,18 @@ const resolveAll = async promises => {
   return Promise.all(promises).then(result => result);
 };
 
-const getCache = () => {
+const getCache = args => {
+  const [times, unit] = args.split(' ');
+
+  const units = {
+    seconds: 1,
+    minutes: 60,
+    hours: 60 * 60,
+    days: 24 * 60 * 60,
+  };
+
+  const cachingTime = times * units[unit];
+
   return async (req, res, next) => {
     const url = req._parsedOriginalUrl.pathname;
 
@@ -29,7 +40,7 @@ const getCache = () => {
       res.sendStatus = res.send;
       res.send = body => {
         client.set(url, JSON.stringify(body));
-        client.expire(url, 7 * 24 * 60 * 60);
+        client.expire(url, cachingTime);
 
         res.sendStatus(body);
 
@@ -75,7 +86,7 @@ router.get('/', (req, res) => {
 
 router.get(
   '/:user/top-bands',
-  getCache(),
+  getCache('1 days'),
   wrapAsync(async (req, res) => {
     let topBands = await spotifyClient.topBands(req.query.token);
 
