@@ -1,14 +1,29 @@
 import express from 'express';
 
-import client from '../../clients/spotify';
+import wrapAsync from '../../utils/wrapAsync';
+
+import spotifyClient from '../../clients/spotify';
 import UserController from '../../controllers/userController';
 import BandsTransformer from '../../services/BandsTransformer';
 
 const router = express.Router();
 
-const wrapAsync = fn => {
+// Redis cache
+import client from '../../clients/redis';
+
+const cache = () => {
   return (req, res, next) => {
-    fn(req, res, next).catch(next);
+    console.log(req);
+    // client.get(url, (error, result) => {
+    //   resolve(JSON.parse(result));
+    // });
+
+    res.sendStatus = res.send;
+    res.send = body => {
+      console.log('caching!!!');
+      res.sendStatus(body);
+    };
+    next();
   };
 };
 
@@ -19,8 +34,9 @@ router.get('/', (req, res) => {
 
 router.post(
   '/top-bands',
+  cache(),
   wrapAsync(async (req, res) => {
-    let topBands = await client.topBands(req.body.token);
+    let topBands = await spotifyClient.topBands(req.body.token);
 
     topBands = BandsTransformer.fromSpotify(topBands);
 
@@ -32,8 +48,12 @@ router.post(
 
 router.post(
   '/similar-bands',
+  cache(),
   wrapAsync(async (req, res) => {
-    let similarBands = await client.similarBands(req.body.ids, req.body.token);
+    let similarBands = await spotifyClient.similarBands(
+      req.body.ids,
+      req.body.token,
+    );
 
     similarBands = BandsTransformer.fromSpotify(similarBands);
 

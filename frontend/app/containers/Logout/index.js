@@ -20,6 +20,7 @@ class Logout extends React.Component {
     this.props.resetBands();
     this.props.resetLastfmToken();
     this.props.resetSpotifyToken();
+    this.props.history.push(`/login`);
   }
 
   render() {

@@ -1,16 +1,12 @@
 import express from 'express';
 
-import client from '../../clients/lastfm';
+import wrapAsync from '../../utils/wrapAsync';
+
+import lastfmClient from '../../clients/lastfm';
 import UserController from '../../controllers/userController';
 import BandsTransformer from '../../services/BandsTransformer';
 
 const router = express.Router();
-
-const wrapAsync = fn => {
-  return (req, res, next) => {
-    fn(req, res, next).catch(next);
-  };
-};
 
 /* GET home page. */
 router.get('/', (req, res) => {
@@ -20,7 +16,7 @@ router.get('/', (req, res) => {
 router.post(
   '/top-bands',
   wrapAsync(async (req, res) => {
-    let topBands = await client.topBands('gereeet');
+    let topBands = await lastfmClient.topBands('gereeet');
 
     topBands = BandsTransformer.fromLastfm(topBands);
 
@@ -33,7 +29,7 @@ router.post(
 router.post(
   '/similar-bands',
   wrapAsync(async (req, res) => {
-    let similarBands = await client.similarBands(req.body.names);
+    let similarBands = await lastfmClient.similarBands(req.body.names);
 
     similarBands = BandsTransformer.fromLastfm(similarBands);
 
