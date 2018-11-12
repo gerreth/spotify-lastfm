@@ -14,14 +14,6 @@ class Client {
     return Promise.all(promises).then(result => result);
   }
 
-  async getCache(url) {
-    return new Promise((resolve, reject) => {
-      client.get(url, (error, result) => {
-        resolve(JSON.parse(result));
-      });
-    });
-  }
-
   async getApi(url, token) {
     const instance = axios.create({
       headers: { Authorization: 'Bearer ' + token },
@@ -32,32 +24,19 @@ class Client {
     return response;
   }
 
-  async get(url, token, type) {
+  async get(url, token) {
     let response;
-    const key = type === 'top' ? `${url}${token}` : `${url}-similar`;
 
+    logger('from api');
     try {
-      response = await this.getCache(key);
+      response = await this.getApi(url, token);
+      response = response.data.artists;
     } catch (e) {
+      logger(e);
       throw e;
     }
-
-    if (response === null) {
-      logger('from api');
-      try {
-        response = await this.getApi(url, token);
-        // Rewrite!
-        response = type === 'top' ? response.data.items : response.data.artists;
-      } catch (e) {
-        logger(e);
-        throw e;
-      }
-      client.set(key, JSON.stringify(response));
-      client.expire(key, 7 * 24 * 60 * 60);
-      // client.expire(`${url}${token}`, 30);
-    } else {
-      logger('from cache');
-    }
+    client.set(url, JSON.stringify(response));
+    client.expire(url, 7 * 24 * 60 * 60);
 
     return response;
   }
@@ -67,11 +46,11 @@ class Client {
 
     const topBands = [];
 
+    const endpoint = `me/top/artists?limit=100&time_range=${time_range}`;
+    const url = `${baseUrl}/${endpoint}`;
     try {
-      const endpoint = `me/top/artists?limit=100&time_range=${time_range}`;
-      const url = `${baseUrl}/${endpoint}`;
-      const response = await this.get(url, token, 'top');
-      topBands.push(...response);
+      const response = await this.getApi(url, token);
+      topBands.push(...response.data.items);
     } catch (e) {
       throw e;
     }
@@ -79,14 +58,15 @@ class Client {
     return topBands;
   }
 
-  async similarBands(ids, token) {
+  async similarBands(ids, token, bands) {
     const { baseUrl } = this.props;
+
     // get array of promises
     const promises = ids.map(async id => {
+      const endpoint = `artists/${id}/related-artists`;
+      const url = `${baseUrl}/${endpoint}`;
       try {
-        const endpoint = `artists/${id}/related-artists`;
-        const url = `${baseUrl}/${endpoint}`;
-        const response = await this.get(url, token, 'similar');
+        const response = await this.get(url, token);
         return response;
       } catch (e) {
         logger(e);
@@ -98,15 +78,14 @@ class Client {
     const results = await this.resolveAll(promises);
 
     // flattens array and removes undefinedsfile
-    const result = results.reduce(
+    const result = [...results, ...bands].reduce(
       (carry, item) => (item === undefined ? carry : [...carry, ...item]),
       [],
     );
 
     // check for duplicates
     const similarBands = result.reduce((carry, band) => {
-      const notInSimilar =
-        carry.find(item => item.name === band.name) === undefined;
+      const notInSimilar = carry.every(item => item.name !== band.name);
       const notInTop = ids.indexOf(band.id) === -1;
       // return only if band not in list of similar or top bands
       return notInSimilar && notInTop ? [...carry, band] : carry;

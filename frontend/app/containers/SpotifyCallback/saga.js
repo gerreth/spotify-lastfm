@@ -22,7 +22,7 @@ function* getBands() {
   yield put(setToken(token));
 
   try {
-    topBands = yield call(makeRequest, 'top-bands', { token });
+    topBands = yield call(fetchTopBands, 'gereeet', token);
     yield put(setTopBands(topBands));
   } catch (error) {
     yield put(setTopBandsError());
@@ -31,7 +31,7 @@ function* getBands() {
   const ids = yield select(topBandsIdSelector());
 
   try {
-    similarBands = yield call(makeRequest, 'similar-bands', { token, ids });
+    similarBands = yield call(fetchSimilarBands, token, ids);
     yield put(setSimilarBands(similarBands));
   } catch (error) {
     yield put(setSimilarBandsError());
@@ -49,18 +49,36 @@ export default saga;
 /**
  *  Requests
  */
-const makeRequest = async (endpoint, data) => {
-  const baseUrl = 'http://localhost:1001';
-  const source = 'spotify';
+const baseUrl = 'http://localhost:1001';
+const source = 'spotify';
 
+const fetchTopBands = async (user, token) => {
+  const url = `${baseUrl}/${source}/${user}/top-bands?token=${token}`;
+  const settings = { method: 'GET' };
+
+  const response = await makeRequest(url, settings);
+
+  return response;
+};
+
+const fetchSimilarBands = async (token, ids) => {
+  const url = `${baseUrl}/${source}/similar-bands?token=${token}`;
+  const settings = {
+    method: 'POST',
+    body: JSON.stringify({ ids }),
+  };
+
+  const response = await makeRequest(url, settings);
+
+  return response;
+};
+
+const makeRequest = async (url, settings) => {
   const options = {
     headers: { 'Content-Type': 'application/json' },
     json: true,
-    method: 'POST',
-    body: JSON.stringify(data),
+    ...settings,
   };
-
-  const url = `${baseUrl}/${source}/${endpoint}`;
 
   const response = await fetch(url, options);
 

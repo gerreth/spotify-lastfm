@@ -15,7 +15,42 @@ import { spotifyTokenSelector } from '../SpotifyCallback/selectors';
 import { allBandsSelector } from './selectors';
 import { BandsWrapper } from './styled';
 
+const baseUrl = 'http://localhost:1001';
+const source = 'spotify';
+
+const fetchTopBands = async token => {
+  const url = `${baseUrl}/${source}/gereeet/top-bands?token=${token}`;
+  const settings = { method: 'GET' };
+
+  const response = await makeRequest(url, settings);
+
+  return response;
+};
+
+const makeRequest = async (url, settings) => {
+  const options = {
+    headers: { 'Content-Type': 'application/json' },
+    json: true,
+    ...settings,
+  };
+
+  const response = await fetch(url, options);
+
+  if (response.status !== 200) {
+    throw response;
+  }
+
+  return response.json();
+};
+
 class Bands extends React.Component {
+  fetchBands = async () => {
+    const { token } = this.props;
+
+    const response = await fetchTopBands(token);
+    console.log({ response });
+  };
+
   render() {
     const top = this.props.bands.top.map(band => (
       <TopBand
@@ -41,6 +76,7 @@ class Bands extends React.Component {
 
     return (
       <div>
+        <div onClick={this.fetchBands}>Fetch</div>
         <BandsWrapper>{top}</BandsWrapper>
         <BandsWrapper>{similar}</BandsWrapper>
       </div>

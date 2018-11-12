@@ -11,18 +11,59 @@ const router = express.Router();
 // Redis cache
 import client from '../../clients/redis';
 
-const cache = () => {
-  return (req, res, next) => {
-    console.log(req);
-    // client.get(url, (error, result) => {
-    //   resolve(JSON.parse(result));
-    // });
+const resolveAll = async promises => {
+  return Promise.all(promises).then(result => result);
+};
 
-    res.sendStatus = res.send;
-    res.send = body => {
-      console.log('caching!!!');
-      res.sendStatus(body);
-    };
+const getCache = () => {
+  return async (req, res, next) => {
+    const url = req._parsedOriginalUrl.pathname;
+
+    const cached = await new Promise((resolve, reject) => {
+      client.get(url, (error, result) => {
+        resolve(JSON.parse(result));
+      });
+    });
+
+    if (cached === null) {
+      res.sendStatus = res.send;
+      res.send = body => {
+        client.set(url, JSON.stringify(body));
+        client.expire(url, 7 * 24 * 60 * 60);
+
+        res.sendStatus(body);
+
+        res.send(cached);
+        next();
+      };
+    } else {
+      res.send(cached);
+    }
+  };
+};
+
+const postCache = () => {
+  return async (req, res, next) => {
+    let ids = req.body.ids;
+
+    const bandsPromises = await ids.map(async id => {
+      const cached = await new Promise((resolve, reject) => {
+        const key = `https://api.spotify.com/v1/artists/${id}/related-artists`;
+        client.get(key, (error, result) => {
+          resolve(JSON.parse(result));
+        });
+      });
+
+      ids = ids.filter(_ => _ !== id);
+
+      return cached;
+    });
+
+    const bands = await resolveAll(bandsPromises);
+
+    req.bands = bands;
+    req.ids = ids;
+
     next();
   };
 };
@@ -32,11 +73,11 @@ router.get('/', (req, res) => {
   res.send('response');
 });
 
-router.post(
-  '/top-bands',
-  cache(),
+router.get(
+  '/:user/top-bands',
+  getCache(),
   wrapAsync(async (req, res) => {
-    let topBands = await spotifyClient.topBands(req.body.token);
+    let topBands = await spotifyClient.topBands(req.query.token);
 
     topBands = BandsTransformer.fromSpotify(topBands);
 
@@ -48,11 +89,12 @@ router.post(
 
 router.post(
   '/similar-bands',
-  cache(),
+  postCache(),
   wrapAsync(async (req, res) => {
     let similarBands = await spotifyClient.similarBands(
-      req.body.ids,
-      req.body.token,
+      req.ids,
+      req.query.token,
+      req.bands,
     );
 
     similarBands = BandsTransformer.fromSpotify(similarBands);
